@@ -140,8 +140,14 @@ summary(dat5)
 
 # Scale all vars to {mean = 0} and {sd = 1} -------------------------------
 
+# Drop all incomplete obs
+dim(dat5 %>% filter(complete.cases(dat5))) # 6967 x 47
+dat5 <- dat5 %>% filter(complete.cases(dat5))
+
+dim(dat5) # 6967 x 47
+
 for(x in 10:47){
-  dat5[,x] <- scale(dat5[,x])
+  dat5[,x] <- as.numeric(scale(dat5[,x]))
 }
 
 round(
@@ -154,27 +160,28 @@ round(
 
 # -------------------------------------------------------------------------
 
-# save(dat5, file = paste0(path, "/Data/Cleaned/FINAL_DATA.Rda")) # Save to external file
+save(dat5, file = paste0(path, "/Data/Cleaned/FINAL_DATA.Rda")) # Save to external file
 
 # -------------------------------------------------------------------------
 # FINAL DATA SET ----------------------------------------------------------
 load(file = paste0(path, "/Data/Cleaned/FINAL_DATA.Rda"))
 
-dim(dat5) # 8918 x 47
+dim(dat5) # 6967 x 47
 head(dat5)
 
 t(dat5 %>% filter(place_geoid == 1712385) %>% clipr::write_clip()) # Pull and example city
 t(dat5 %>% filter(urbanarea_geoid == 74179) %>% clipr::write_clip()) # Pull an example urban area
 
-for(x in 1:dim(dat5)[2]) # Check maximum std devs from zero
+minMaxStdDevs <- as.data.frame(matrix(, 38, 3))
+names(minMaxStdDevs) <- c("VarName", "MinStdDev", "MaxStdDev")
+for(x in 10:47) # Check min/max std devs from zero
 {
-  print(paste0(names(dat5)[x], ": ", max(dat5[,x], na.rm = T)))
+  minMaxStdDevs[x-9,1] <- names(dat5)[x]
+  minMaxStdDevs[x-9,2] <- round(min(dat5[,x], na.rm = T), digits = 3)
+  minMaxStdDevs[x-9,3] <- round(max(dat5[,x], na.rm = T), digits = 3)
+  # print(paste0(names(dat5)[x], ": {", round(min(dat5[,x], na.rm = T), digits = 3), ", ", round(max(dat5[,x], na.rm = T), digits = 3), "}"))
 }
-
-for(x in 1:dim(dat5)[2]) # Check minimum std devs from zero 
-{
-  print(paste0(names(dat5)[x], ": ", min(dat5[,x], na.rm = T)))
-}
+minMaxStdDevs
 
 # Explore all values, excluding ids, national ratios, and percents of total
 foo <- unlist(dat5[,c(12:34)])

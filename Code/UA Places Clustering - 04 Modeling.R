@@ -10,8 +10,8 @@ options(scipen = 9999)
 
 path <- "2023 04 City Roles In Urban Areas"
 
+
 # Functions ---------------------------------------------------------------
-# Function formats PCA output for easy consumption
 pcalooksee <- function(tmpPca, numComponents = 6, componentLoadingThreshold = 0.18)
 {
   plot(tmpPca, main = "PCA Scree Plot")
@@ -29,7 +29,7 @@ pcalooksee <- function(tmpPca, numComponents = 6, componentLoadingThreshold = 0.
   for(p in 1:numComponents) {
     
     tmpLoadingsOrder1 <- sort(tmpPca$loadings[,p])
-    tmpLoadingsOrder2 <- tmpLoadingsOrder1[which(abs(tmpLoadingsOrder1) > componentLoadingThreshold)] # Keep loadings that are above specified threshold
+    tmpLoadingsOrder2 <- tmpLoadingsOrder1[which(abs(tmpLoadingsOrder1) > componentLoadingThreshold)]
     tmpLoadingsOrder3 <- matrix(tmpLoadingsOrder2)
     row.names(tmpLoadingsOrder3) <- names(tmpLoadingsOrder2)
     tmpLoadingsOrder3 <- as.data.frame(tmpLoadingsOrder3)
@@ -63,7 +63,7 @@ pcalooksee <- function(tmpPca, numComponents = 6, componentLoadingThreshold = 0.
 # Load data ----------------------------------------------------------
 load(file = paste0(path, "/Data/Cleaned/FINAL_DATA.Rda"))
 
-dim(dat5) # 8918 x 47
+dim(dat5) # 6967 x 47
 head(dat5)
 
 # t(dat5 %>% filter(place_geoid == 1712385) %>% clipr::write_clip())
@@ -82,14 +82,8 @@ head(dat5)
 # 
 
 
-# Drop all incomplete obs -------------------------------------------------
-summary(dat5)
-dat6 <- dat5 %>% filter(complete.cases(dat5))
-summary(dat6)
-
-
 # -------------------------------------------------------------------------
-dat <- dat6
+dat <- dat5
 # -------------------------------------------------------------------------
 
 
